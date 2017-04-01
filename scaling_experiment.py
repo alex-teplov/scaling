@@ -13,7 +13,7 @@ class Experiment:
 		self.launch_parameters = self.extract_params(log_path)
 		self.comment = ''
 		if self.check_file(log_path):
-			print("Not a log file")
+			# print("Not a log file")
 			self.comment = 'Error in datafile import. Required rerun on the params {0}'.format(self.launch_parameters)
 		else:
 			self.launch_data = self.readlog(log_path)
@@ -28,7 +28,7 @@ class Experiment:
 		# print('Check method')
 		filedata = open(logfile,'r')
 		if (filedata.read(32))=='--------------------------------':
-			print("Error file")
+			# print("Error file")
 			filedata.close()
 			return 1
 		else:
@@ -102,7 +102,7 @@ class MergedExperiment(Experiment):
 
 	def merge(self, experiment_obj):
 		if self.launch_parameters == experiment_obj.launch_parameters:
-			print('Merge is possible')
+			# print('Merge is possible')
 			self.source_log.add(experiment_obj.source_log)
 			for key in experiment_obj.launch_data.keys():
 				self.launch_data[key].append(experiment_obj.launch_data[key])
@@ -112,7 +112,7 @@ class MergedExperiment(Experiment):
 			return 0
 
 		else:
-			print('Error: Merge is impossible')
+			# print('Error: Merge is impossible')
 			return 1
 
 

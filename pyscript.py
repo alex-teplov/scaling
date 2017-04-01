@@ -2,6 +2,7 @@
 import os
 from scaling_experiment import Experiment, MergedExperiment
 import itertools
+import numpy
 
 log_directory = '/Users/teplov/Dropbox/НИВЦ/Upsala/Logs from Jonathan dence/'
 log_file = 'fmm3d_p1_10000k_l3_t8_206971.log'
@@ -21,7 +22,7 @@ def dir_extract(dir_path, filter_value):
 	dir_data = []
 	for file in datafiles:
 		full_file_name = dir_path+file
-		print (file)
+		# print (file)
 		
 		dir_data.append(Experiment(full_file_name))
 	return dir_data
@@ -96,7 +97,7 @@ experiment_set = data[0:]
 i=0
 print ("Number of logs : {0}".format(len(experiment_set)))
 for experiment in experiment_set:
-	print (experiment.source_log)
+	# print (experiment.source_log)
 	if experiment.comment:
 		continue
 
@@ -137,8 +138,12 @@ for data in merged_data:
 		print('      {0}'.format(log)) #print('4 Length of current source_log: {0}'.format(data.source_log))
 	print('4 Current data_extract : {0}'.format(data.data_extract))
 
-# print('Hello')
 
+print('\n========Extraction of data==========')
+for data in merged_data:
+	print ('Parameters: {0}'.format(data.launch_parameters))
+	for app_part in data.data_extract:
+		print('     {0} : {1}'.format(app_part, numpy.percentile(data.data_extract[app_part],75)))
 
 
 		
