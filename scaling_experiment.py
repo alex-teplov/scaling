@@ -114,5 +114,17 @@ class MergedExperiment(Experiment):
 		else:
 			# print('Error: Merge is impossible')
 			return 1
+class Timing:
+	def __init__(self, params, time):
+		self.params = params
+		self.time = time
 
+class Application_part:
+
+	def __init__(self, part_name, parameters, time):
+		self.part_name = part_name
+		self.param_timing = [Timing(parameters,time),]
+		print('Inited')
+	def add(self, parameters, time):
+		self.param_timing.append(Timing(parameters, time))
 
