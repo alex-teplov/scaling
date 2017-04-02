@@ -119,12 +119,23 @@ class Timing:
 		self.params = params
 		self.time = time
 
+	def __eq__(self, other):
+		return self.params == other.params
+
+	# def __lt__(self, other):
+	# 	for param in self.params:
+	# 		if self.params[param]<other.params[param]:
+	# 			return self<other
+				
+
+
+
 class Application_part:
 
 	def __init__(self, part_name, parameters, time):
 		self.part_name = part_name
 		self.param_timing = [Timing(parameters,time),]
-		print('Inited')
+		
 	def add(self, parameters, time):
 		self.param_timing.append(Timing(parameters, time))
 
