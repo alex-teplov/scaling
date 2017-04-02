@@ -1,6 +1,7 @@
 
 import os
-from scaling_experiment import Experiment, MergedExperiment
+# from scaling_experiment import Experiment, MergedExperiment, Application_part
+from scaling_experiment import *
 import itertools
 import numpy
 
@@ -146,7 +147,46 @@ for data in merged_data:
 		print('     {0} : {1}'.format(app_part, numpy.percentile(data.data_extract[app_part],75)))
 
 
+print('=========Parts of the application===========')
+parts_array = {}
+data_set =  merged_data[0:]
+for data in data_set:
+	print('Parsing merge data:')
+	print ('Parameters: {0}'.format(data.launch_parameters))
+	for app_part in data.data_extract:
 		
+		print('     {0} : {1}'.format(app_part, numpy.percentile(data.data_extract[app_part],75)))
+		if parts_array.get(app_part):
+			print('Some parts here')
+			parts_array[app_part].add(data.launch_parameters,numpy.percentile(data.data_extract[app_part],75))
+
+		else: 
+			print(' Creating App part with {0}, {1}, {2}'.format(app_part, data.launch_parameters,numpy.percentile(data.data_extract[app_part],75)))
+			# part_entity = Application_part()
+			application_part_entity = Application_part(app_part, data.launch_parameters, numpy.percentile(data.data_extract[app_part],75))
+			print(' Entity name : {0}'.format(application_part_entity.part_name))
+			parts_array[application_part_entity.part_name] = application_part_entity
+
+	# for part in parts_array:
+	# 	print ('a')
+
+	# else: 
+	# 	print('c') 
+	# 	for app_part in data.data_extract:
+	# 		print(' Creating App part with {0}, {1}, {2}'.format(app_part, data.launch_parameters,numpy.percentile(data.data_extract[app_part],75)))
+	# 		# part_entity = Application_part()
+	# 		application_part_entity = Application_part(app_part, data.launch_parameters, numpy.percentile(data.data_extract[app_part],75))
+	# 		print(' Entity name : {0}'.format(application_part_entity.part_name))
+	# 		parts_array.append(application_part_entity)
+
+print ('Found parts: {0}'.format(len(parts_array)))
+for part in parts_array:
+	print ('   {0}'.format(part))
+	print ('       {0}'.format(parts_array[part].part_name))
+	for timing in parts_array[part].param_timing:
+		print ('            {0} : {1}'.format(timing.params, timing.time))
+
+
 
 
 
