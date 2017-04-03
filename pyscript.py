@@ -181,15 +181,22 @@ print(parts_array['Alloc'].part_name)
 # sorted(parts_array['Alloc'].param_timing)
 
 for part in parts_array:
+	output = []
 	print(part)
 
 	f = open('{0}_timing.txt'.format(parts_array[part].part_name),'w')
 	for timing in parts_array[part].param_timing:
+		output.append((timing.params['Procs'], timing.params['Levels'], timing.time))
+
+	for line in output:
+
+
 	# print ('            {0} : {1}'.format(timing.params, timing.time))
 	
 	# print ('{0} {1} {2}'.format(timing.params['Procs'], timing.params['Levels'], timing.time))
-		f.write('{0} {1} {2}\n'.format(timing.params['Procs'], timing.params['Levels'], timing.time))
-
+		# f.write('{0} {1} {2}\n'.format(timing.params['Procs'], timing.params['Levels'], timing.time))
+		f.write('{0} {1} {2}\n'.format(line[0],line[1],line[2]))
+	print (sorted(output))
 	f.close()
 
 
