@@ -20,11 +20,28 @@ class Experiment:
 			self.data_extract = self.log_max_time(log_path)
 			# print ("Experiment {0} inited".format(self.source_log))
 	
-	# def print(self):
-	# 	for self.__dict__
+	def print(self,mode=''):
+		print('*  Log path:\n*      {0}'.format(self.source_log))
+		print('*  Launch parameters of the experiment: ')
+		for parameter in self.launch_parameters:
+			print('*      {0} : {1}'.format(parameter,self.launch_parameters[parameter]))
+		if self.comment:
+			print('*  Comment: {0}'.format(self.comment))
+		print('*  Max time between processes in log:')
+		for key in self.data_extract:
+			print('*     {0} : {1}'.format(key,self.data_extract[key]))
+		if mode:
+			print('* Full data of logfile:')
+			for key in self.launch_data:
+				print ('*      {0} : '.format(key))
+				for proc in self.launch_data[key]:
+					print('*        {0} : {1}'.format(proc,self.launch_data[key][proc]))
+
 
 
 	def check_file(self, logfile):
+		# TODO:
+		# move to the regexp in the check and try to formalize the checking of the file correctness.
 		# print('Check method')
 		filedata = open(logfile,'r')
 		if (filedata.read(32))=='--------------------------------':
@@ -36,6 +53,8 @@ class Experiment:
 			return 0
 
 	def extract_params(self, logfile):
+		#TODO:
+		#implement abstract parameters set for this method
 		# print('Extract method')
 		linewords = logfile.split('/')
 		params = linewords[-1].split('_')
@@ -74,7 +93,7 @@ class Experiment:
 		filedata.close()
 		return log_data
 	def log_max_time(self, logfile):
-		log_data = self.readlog(logfile)
+		log_data = self.readlog(logfile)    # Possible to avoid double call of readlog for the same file
 		log_max_time = {}
 		# print(log_data)
 		# print(log_data.keys())
@@ -143,6 +162,7 @@ class Application_part:
 		# TODO:
 		# implement abstract parameter set output
 		# Add support of correctness checking and visualisation parameters script
+		# Need to add parameters bounds to the default filename
 		if not filename:
 			filename = '{0}_timing.txt'.format(self.part_name)
 			output = []
