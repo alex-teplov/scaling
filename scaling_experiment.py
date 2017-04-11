@@ -139,3 +139,18 @@ class Application_part:
 	def add(self, parameters, time):
 		self.param_timing.append(Timing(parameters, time))
 
+	def print_in_file(self,filename=''):
+		# TODO:
+		# implement abstract parameter set output
+		# Add support of correctness checking and visualisation parameters script
+		if not filename:
+			filename = '{0}_timing.txt'.format(self.part_name)
+			output = []
+		f = open(filename,'w')
+		for timing in self.param_timing:
+			output.append((timing.params['Procs'], timing.params['Levels'], timing.time))
+		output = sorted(output)
+		for line in output:
+			f.write('{0} {1} {2}\n'.format(line[0],line[1],line[2]))
+		f.close()
+
