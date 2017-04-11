@@ -1,22 +1,12 @@
 
 import os
-# from scaling_experiment import Experiment, MergedExperiment, Application_part
 from scaling_experiment import *
 import itertools
 import numpy
 
 log_directory = '/Users/teplov/Dropbox/НИВЦ/Upsala/Logs from Jonathan dence/'
-log_file = 'fmm3d_p1_10000k_l3_t8_206971.log'
-log_64 = 'fmm3d_p64_10000k_l3_t8_206997.log'
 
-log_64_2 = 'fmm3d_p64_10000k_l3_t8_206998.log'
-log_check = 'fmm3d_p1_10000k_l3_t8_206971.log'
-full_log_path = log_directory+log_64
-# print (full_log_path)
-# extract_params(full_log_path)
-# dir_extract(log_directory,".log")
-# check_file( log_directory+'fmm3d_p4_10000k_l4_t8_207009.log')
-# 
+
 def dir_extract(dir_path, filter_value):
 	fileslist = os.listdir(dir_path)
 	datafiles = filter(lambda x: x.endswith(filter_value), fileslist)
@@ -27,10 +17,7 @@ def dir_extract(dir_path, filter_value):
 		
 		dir_data.append(Experiment(full_file_name))
 	return dir_data
-		# if check_file(full_file_name) ==0:
-		# 	print (extract_params(full_file_name))
-		# 	print (log_max_time(full_file_name))
-# 
+		
 
 
 def collect_params(launch_set):
@@ -48,22 +35,6 @@ def collect_params(launch_set):
 	print(params_names)
 	return params
 
-def merge_experiments(launch_set):
-	merged_set = set()
-	for experiment in launch_set:
-		# print(experiment.launch_parameters, experiment.data_extract)
-		
-		# print(experiment.source_log)
-		if experiment.source_log not in merged_set:
-			pass
-	# print(merged_set)
-
-
-
-a = Experiment(log_directory+log_64)
-a_2 = Experiment(log_directory+log_64_2)
-a_3 = Experiment(log_directory+log_file)
-# print (a.launch_parameters, a.data_extract)
 
 data = dir_extract(log_directory, '.log')
 
@@ -76,22 +47,6 @@ print ("\n Total number of parsed logs: {0}".format(len(data)))
 # 	else:
 # 		print(experiment.source_log, experiment.comment)
 
-# del a
-
-# print( collect_params(data))
-
-merge_experiments(data)
-
-# b = MergedExperiment(a)
-# print(b.data_extract)
-# c = MergedExperiment(a_2)
-# print(c.data_extract)
-# print(b.merge(a_2))
-# print(b.merge(a_3))
-# # print(b.launch_data)
-# print(b.data_extract, b.source_log)
-# print(c.data_extract, c.source_log)
-# del b,c
 
 merged_data = []
 experiment_set = data[0:]
@@ -129,7 +84,9 @@ for experiment in experiment_set:
 
 
 print('Number of iterations :{0}'.format(i))
+
 # print('=======Total data========')
+
 # print('merged_data length : {0}'.format(len(merged_data)))
 # for data in merged_data:
 
@@ -178,7 +135,6 @@ print ('Found parts: {0}'.format(len(parts_array)))
 
 
 print(parts_array['Alloc'].part_name)
-# sorted(parts_array['Alloc'].param_timing)
 
 for part in parts_array:
 	output = []
@@ -187,7 +143,7 @@ for part in parts_array:
 	f = open('{0}_timing.txt'.format(parts_array[part].part_name),'w')
 	for timing in parts_array[part].param_timing:
 		output.append((timing.params['Procs'], timing.params['Levels'], timing.time))
-
+	output = sorted(output)
 	for line in output:
 
 
@@ -196,7 +152,7 @@ for part in parts_array:
 	# print ('{0} {1} {2}'.format(timing.params['Procs'], timing.params['Levels'], timing.time))
 		# f.write('{0} {1} {2}\n'.format(timing.params['Procs'], timing.params['Levels'], timing.time))
 		f.write('{0} {1} {2}\n'.format(line[0],line[1],line[2]))
-	print (sorted(output))
+	
 	f.close()
 
 
