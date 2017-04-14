@@ -1,5 +1,6 @@
 
 import os
+import numpy
 
 class Experiment:
 
@@ -32,19 +33,18 @@ class Experiment:
 		print('*  Log path:\n*      {0}'.format(self.source_log))
 		print('*  Launch parameters of the experiment: ')
 		for parameter in self.launch_parameters:
-			print('*      {0} : {1}'.format(parameter,self.launch_parameters[parameter]))
+			print('*      {0} : {1}'.format(parameter, self.launch_parameters[parameter]))
 		if self.comment:
 			print('*  Comment: {0}'.format(self.comment))
 		print('*  Max time between processes in log:')
 		for key in self.data_extract:
-			print('*     {0} : {1}'.format(key,self.data_extract[key]))
+			print('*     {0} : {1}'.format(key, self.data_extract[key]))
 		if mode:
 			print('* Full data of logfile:')
 			for key in self.launch_data:
 				print ('*      {0} : '.format(key))
 				for proc in self.launch_data[key]:
-					print('*        {0} : {1}'.format(proc,self.launch_data[key][proc]))
-
+					print('*        {0} : {1}'.format(proc, self.launch_data[key][proc]))
 
 	def check_file(self, logfile):
 		# TODO:
@@ -75,7 +75,7 @@ class Experiment:
 
 	def readlog(self, logfile):
 		# print('Readlog method')
-		filedata = open(logfile,"r")
+		filedata = open(logfile, "r")
 		# print (filedata.readlines())
 		log_data = {}
 		for line in filedata.readlines():
@@ -99,6 +99,7 @@ class Experiment:
 		# print(log_data)
 		filedata.close()
 		return log_data
+
 	def log_max_time(self, logfile):
 		log_data = self.readlog(logfile)    # Possible to avoid double call of readlog for the same file
 		log_max_time = {}
@@ -108,6 +109,8 @@ class Experiment:
 				log_max_time[key] = max(log_data[key].values())
 		# print(log_max_time)
 		return log_max_time
+
+
 
 class MergedExperiment(Experiment):
 
@@ -134,11 +137,12 @@ class MergedExperiment(Experiment):
 
 				self.data_extract[key].append(experiment_obj.data_extract[key])
 			return 0
-
 		else:
 			# print('Error: Merge is impossible')
 			return 1
-			
+
+
+
 class Timing:
 	def __init__(self, params, time):
 		self.params = params
@@ -159,7 +163,7 @@ class Application_part:
 
 	def __init__(self, part_name, parameters, time):
 		self.part_name = part_name
-		self.param_timing = [Timing(parameters,time),]
+		self.param_timing = [Timing(parameters, time),]
 		
 	def add(self, parameters, time):
 		self.param_timing.append(Timing(parameters, time))
@@ -169,14 +173,30 @@ class Application_part:
 		# implement abstract parameter set output
 		# Add support of correctness checking and visualisation parameters script
 		# Need to add parameters bounds to the default filename
-		if not filename:
-			filename = '{0}_timing.txt'.format(self.part_name)
-			output = []
-		f = open(filename,'w')
+		output = []
+		procs = set()
+		levels = set()
 		for timing in self.param_timing:
 			output.append((timing.params['Procs'], timing.params['Levels'], timing.time))
+			procs.add(timing.params['Procs'])
+			levels.add(timing.params['Levels'])
 		output = sorted(output)
+		template = {}
+
+		# Performing a template for visualisation with a bounds and values of params
+		for proc in sorted(procs):
+			for level in sorted(levels):
+				template['{0} {1}'.format(proc,level)] = '?'
+
+		# Updating the template with a data from application part
 		for line in output:
-			f.write('{0} {1} {2}\n'.format(line[0],line[1],line[2]))
+			template['{0} {1}'.format(line[0], line[1])] = line[2]
+
+		if not filename:
+			filename = '{0}_{1}_{2}:{3}_{4}_{5}:{6}_timing.txt'.format(self.part_name, 'Procs', min(procs), max(procs), 'Levels', min(levels), max(levels))
+
+		f = open(filename,'w')
+		for line in template:
+			f.write('{0} {1}\n'.format(line, template[line]))
 		f.close()
 
