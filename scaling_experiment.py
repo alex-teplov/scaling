@@ -2,11 +2,6 @@
 import os
 
 class Experiment:
-	# source_log = ''
-	# launch_parameters = {}
-	# launch_data = {}
-	# data_extract = {}
-	# comment = ''
 
 	def __init__(self, log_path):
 		self.source_log = log_path
@@ -19,6 +14,19 @@ class Experiment:
 			self.launch_data = self.readlog(log_path)
 			self.data_extract = self.log_max_time(log_path)
 			# print ("Experiment {0} inited".format(self.source_log))
+			
+	def __repr__(self):
+		output = ''
+		output += '*  Log path:\n*      {0}\n'.format(self.source_log)
+		output += '*  Launch parameters of the experiment: \n'
+		for parameter in self.launch_parameters:
+			output += '*      {0} : {1}\n'.format(parameter,self.launch_parameters[parameter])
+		if self.comment:
+			output += '*  Comment: {0}'.format(self.comment)
+		output += '*  Max time between processes in log:\n'
+		for key in self.data_extract:
+			output += '*     {0} : {1}\n'.format(key,self.data_extract[key])
+		return output
 	
 	def print(self,mode=''):
 		print('*  Log path:\n*      {0}'.format(self.source_log))
@@ -36,7 +44,6 @@ class Experiment:
 				print ('*      {0} : '.format(key))
 				for proc in self.launch_data[key]:
 					print('*        {0} : {1}'.format(proc,self.launch_data[key][proc]))
-
 
 
 	def check_file(self, logfile):
@@ -103,8 +110,6 @@ class Experiment:
 		return log_max_time
 
 class MergedExperiment(Experiment):
-	# source_log = set()
-	# comment = set()
 
 	def __init__(self, experiment_obj):
 		self.source_log = {experiment_obj.source_log,} 
@@ -133,6 +138,7 @@ class MergedExperiment(Experiment):
 		else:
 			# print('Error: Merge is impossible')
 			return 1
+			
 class Timing:
 	def __init__(self, params, time):
 		self.params = params
