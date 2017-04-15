@@ -36,9 +36,9 @@ def collect_params(launch_set):
 	return params
 
 
-data = dir_extract(log_directory, '.log')
+dir_data = dir_extract(log_directory, '.log')
 
-print ("\n Total number of parsed logs: {0}".format(len(data)))
+print ("\n Total number of parsed logs: {0}".format(len(dir_data)))
 
 # print('\n Comments in the data:')
 # for experiment in data:
@@ -49,7 +49,7 @@ print ("\n Total number of parsed logs: {0}".format(len(data)))
 
 
 merged_data = []
-experiment_set = data[0:]
+experiment_set = dir_data[0:]
 i=0
 print ("Number of logs : {0}".format(len(experiment_set)))
 for experiment in experiment_set:
@@ -140,6 +140,11 @@ for part in parts_array:
 	output = []
 	print(part)
 	parts_array[part].print_in_file()
+	parts_array[part].generate_gnuplot_script()
+
+
+
+
 
 
 
