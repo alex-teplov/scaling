@@ -172,7 +172,7 @@ class Application_part:
 		# TODO:
 		# implement abstract parameter set output
 		# Add support of correctness checking and visualisation parameters script
-		# Need to add parameters bounds to the default filename
+
 		output = []
 		procs = set()
 		levels = set()
@@ -193,10 +193,45 @@ class Application_part:
 			template['{0} {1}'.format(line[0], line[1])] = line[2]
 
 		if not filename:
-			filename = '{0}_{1}_{2}:{3}_{4}_{5}:{6}_timing.txt'.format(self.part_name, 'Procs', min(procs), max(procs), 'Levels', min(levels), max(levels))
+			filename = '{0}_{1}_{2}-{3}_{4}_{5}-{6}_timing.txt'.format(self.part_name, 'Procs', min(procs), max(procs), 'Levels', min(levels), max(levels))
 
-		f = open(filename,'w')
+		f = open (filename,'w')
 		for line in template:
 			f.write('{0} {1}\n'.format(line, template[line]))
 		f.close()
+
+	def generate_gnuplot_script(self,datafile=''):
+		procs = set()
+		levels = set()
+		for timing in self.param_timing:
+			# output.append((timing.params['Procs'], timing.params['Levels'], timing.time))
+			procs.add(timing.params['Procs'])
+			levels.add(timing.params['Levels'])
+		if not datafile:
+			datafile = '{0}_{1}_{2}-{3}_{4}_{5}-{6}_timing.txt'.format(self.part_name, 'Procs', min(procs), max(procs), 'Levels', min(levels), max(levels))
+		
+		output = ''
+		output += 'set dgrid3d {0},{1},3\n'.format(len(levels),len(procs))
+		output += 'set datafile missing "?"\n'
+		output += 'set hidden3d\n'
+		output += 'set hidden3d front\n'
+		output += 'set pm3d\n'
+		output += 'set pm3d depthorder\n'
+		output += 'set pm3d flush begin ftriangles scansforward at s interpolate 20,20\n'
+		output += 'set palette defined\n'
+		output += 'set ticslevel 0\n'
+		output += 'set title "{0} execution time"\n'.format(self.part_name)
+		output += 'set xlabel "{0}"\n'.format('Procs')   #hardcode need to change
+		output += 'set ylabel "{0}"\n'.format('Levels')   #hardcode need to change
+		output += 'set zlabel "{0}" offset 10,10\n'.format('Execution time')   #hardcode need to change
+		output += 'unset key\n'
+		output += 'splot "{0}" with l\n'.format(datafile)
+
+		filename = '{0}_{1}_{2}-{3}_{4}_{5}-{6}_time.gplot'.format(self.part_name, 'Procs', min(procs), max(procs), 'Levels', min(levels), max(levels))
+		
+		f = open ( filename,'w')
+		f.write(output)
+		f.close()
+
+
 
