@@ -139,8 +139,8 @@ print(parts_array['Alloc'].part_name)
 for part in parts_array:
 	output = []
 	print(part)
-	parts_array[part].print_in_file()
-	parts_array[part].generate_gnuplot_script()
+	parts_array[part].print_in_file('log2',part)
+	parts_array[part].generate_gnuplot_script(part)
 
 
 

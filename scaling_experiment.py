@@ -29,7 +29,7 @@ class Experiment:
 			output += '*     {0} : {1}\n'.format(key,self.data_extract[key])
 		return output
 	
-	def print(self,mode=''):
+	def print(self,mode = ''):
 		print('*  Log path:\n*      {0}'.format(self.source_log))
 		print('*  Launch parameters of the experiment: ')
 		for parameter in self.launch_parameters:
@@ -68,7 +68,7 @@ class Experiment:
 		# print (params)
 		params_data = {}
 		params_data['Procs'] = int(params[1][1:])
-		params_data['Problem_size'] = int(params[2][:-1])*1000
+		params_data['Problem_size'] = int(params[2][:-1]) * 1000
 		params_data['Levels'] = int(params[3][1:])
 		params_data['Tolerance'] = int(params[4][1:])
 		return params_data
@@ -80,7 +80,7 @@ class Experiment:
 		log_data = {}
 		for line in filedata.readlines():
 			# print (line)
-			if line == "" or line =='\n' or line.find(":") ==-1:
+			if line == "" or line =='\n' or line.find(":") == -1:
 				# print ("Line Skiped")
 				continue
 			# print ('Line is : " {0} "'.format(line))
@@ -168,7 +168,7 @@ class Application_part:
 	def add(self, parameters, time):
 		self.param_timing.append(Timing(parameters, time))
 
-	def print_in_file(self,filename=''):
+	def print_in_file(self, scale = '', directory = '',filename = ''):
 		# TODO:
 		# implement abstract parameter set output
 		# Add support of correctness checking and visualisation parameters script
@@ -186,21 +186,32 @@ class Application_part:
 		# Performing a template for visualisation with a bounds and values of params
 		for proc in sorted(procs):
 			for level in sorted(levels):
-				template['{0} {1}'.format(proc,level)] = '?'
+				if scale == 'log2':
+					print_proc = int(numpy.log2(proc))
+				else:
+					print_proc = proc
+				template['{0} {1}'.format(print_proc,level)] = '?'
 
 		# Updating the template with a data from application part
 		for line in output:
-			template['{0} {1}'.format(line[0], line[1])] = line[2]
+			if scale == 'log2':
+				print_proc = int(numpy.log2(line[0]))
+			else:
+				print_proc = line[0]
+			template['{0} {1}'.format(print_proc, line[1])] = line[2]
 
 		if not filename:
 			filename = '{0}_{1}_{2}-{3}_{4}_{5}-{6}_timing.txt'.format(self.part_name, 'Procs', min(procs), max(procs), 'Levels', min(levels), max(levels))
 
-		f = open (filename,'w')
+		if directory:
+			if not os.path.exists(directory):
+				os.makedirs(directory)
+		f = open (os.path.join(directory,filename),'w')
 		for line in template:
 			f.write('{0} {1}\n'.format(line, template[line]))
 		f.close()
 
-	def generate_gnuplot_script(self,datafile=''):
+	def generate_gnuplot_script(self, directory = '', datafile=''):
 		procs = set()
 		levels = set()
 		for timing in self.param_timing:
@@ -229,7 +240,13 @@ class Application_part:
 
 		filename = '{0}_{1}_{2}-{3}_{4}_{5}-{6}_time.gplot'.format(self.part_name, 'Procs', min(procs), max(procs), 'Levels', min(levels), max(levels))
 		
-		f = open ( filename,'w')
+		if directory:
+			if not os.path.exists(directory):
+			    os.makedirs(directory)
+		
+		f = open (os.path.join(directory,filename),'w')
+
+		# f = open ( filename,'w')
 		f.write(output)
 		f.close()
 
