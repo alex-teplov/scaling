@@ -3,13 +3,15 @@ import os
 import numpy
 
 class Experiment:
-
+# Class for the experiment for the application 
 	def __init__(self, log_path):
+		# Initializing the base attribute of the experiment
 		self.source_log = log_path
 		self.launch_parameters = self.extract_params(log_path)
 		self.comment = ''
 		if self.check_file(log_path):
 			# print("Not a log file")
+			# Marking the errors of input or execution errors for further separation
 			self.comment = 'Error in datafile import. Required rerun on the params {0}'.format(self.launch_parameters)
 		else:
 			self.launch_data = self.readlog(log_path)
@@ -47,6 +49,7 @@ class Experiment:
 					print('*        {0} : {1}'.format(proc, self.launch_data[key][proc]))
 
 	def check_file(self, logfile):
+		# Checking the input file to be a log file for the experiment, checking the correctness of the format and errrors
 		# TODO:
 		# move to the regexp in the check and try to formalize the checking of the file correctness.
 		# print('Check method')
@@ -60,6 +63,7 @@ class Experiment:
 			return 0
 
 	def extract_params(self, logfile):
+		# Getting params from the logfile
 		#TODO:
 		#implement abstract parameters set for this method
 		# print('Extract method')
@@ -74,6 +78,7 @@ class Experiment:
 		return params_data
 
 	def readlog(self, logfile):
+		# Reading data from log file
 		# print('Readlog method')
 		filedata = open(logfile, "r")
 		# print (filedata.readlines())
@@ -101,6 +106,7 @@ class Experiment:
 		return log_data
 
 	def log_max_time(self, logfile):
+		# Getting maximum time from log
 		log_data = self.readlog(logfile)    # Possible to avoid double call of readlog for the same file
 		log_max_time = {}
 		# print(log_data)
@@ -113,8 +119,9 @@ class Experiment:
 
 
 class MergedExperiment(Experiment):
-
+# Class for the set of the set of applications launches with the same parameters
 	def __init__(self, experiment_obj):
+		# Initializing the base parameters
 		self.source_log = {experiment_obj.source_log,} 
 		self.launch_parameters = experiment_obj.launch_parameters
 		self.launch_data = {}
@@ -128,6 +135,7 @@ class MergedExperiment(Experiment):
 		self.comment.add(experiment_obj.comment)
 
 	def merge(self, experiment_obj):
+		# Method for merging data of new experiment with existing
 		if self.launch_parameters == experiment_obj.launch_parameters:
 			# print('Merge is possible')
 			self.source_log.add(experiment_obj.source_log)
@@ -144,6 +152,7 @@ class MergedExperiment(Experiment):
 
 
 class Timing:
+	# Class for the time of the parameters set and execution time for the application launch
 	def __init__(self, params, time):
 		self.params = params
 		self.time = time
@@ -160,6 +169,7 @@ class Timing:
 
 
 class Application_part:
+	# Class for the application part with the application launches series
 
 	def __init__(self, part_name, parameters, time):
 		self.part_name = part_name

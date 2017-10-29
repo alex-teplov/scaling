@@ -4,10 +4,16 @@ from scaling_experiment import *
 import itertools
 import numpy
 
+
+# loading the path to the folder with logs of experiments
 log_directory = '/Users/teplov/Dropbox/НИВЦ/Upsala/Logs from Jonathan dence/'
 
 
 def dir_extract(dir_path, filter_value):
+
+	# Extracting all the experiments data from folder with "dir_path" and ending with "filter value"
+	# Result is list of the objects of Experiment class
+	
 	fileslist = os.listdir(dir_path)
 	datafiles = filter(lambda x: x.endswith(filter_value), fileslist)
 	dir_data = []
@@ -20,22 +26,7 @@ def dir_extract(dir_path, filter_value):
 		
 
 
-def collect_params(launch_set):
-	params_names = set()
-	params = {}
-	for experiment in launch_set:
-		params_names = params_names.union(set(experiment.launch_parameters.keys()))
-		for param in experiment.launch_parameters.keys():
-			if params.get(param) == None:
-				params[param] = set()
-			params[param].add(experiment.launch_parameters[param])
-			params[param] = set(params[param])
-
-			
-	print(params_names)
-	return params
-
-
+# extracting the data from the directory, filtering extentions only to *.log
 dir_data = dir_extract(log_directory, '.log')
 
 print ("\n Total number of parsed logs: {0}".format(len(dir_data)))
@@ -47,17 +38,22 @@ print ("\n Total number of parsed logs: {0}".format(len(dir_data)))
 # 	else:
 # 		print(experiment.source_log, experiment.comment)
 
-
+# initialize the dataset
 merged_data = []
 experiment_set = dir_data[0:]
+# simply counter of iterations
 i=0
 print ("Number of logs : {0}".format(len(experiment_set)))
 for experiment in experiment_set:
+	# looping threw the experiments source files logs
 	# print (experiment.source_log)
 	if experiment.comment:
+		#passing the experiments with special situations and errors they have not empty comment field
 		continue
 
 	for merged_experiment in reversed(merged_data):
+		# trying to add the new experiment to the already passed experiments the merged data in the reversed number of iterations
+		# because experiments have similar configurations
 		if merged_experiment.merge(experiment):
 			i+=1
 			continue
@@ -69,6 +65,7 @@ for experiment in experiment_set:
 
 	else:
 		# print('Else')
+		# If experiment with such parameters was not found we create a new branch and adding it to the merged data
 		merged = MergedExperiment(experiment)
 		i+=1
 		# print('1 Creating new entiry')
@@ -105,19 +102,23 @@ print('Number of iterations :{0}'.format(i))
 
 
 # print('=========Parts of the application===========')
+# Separating the dataset to the application parts
 parts_array = {}
 data_set =  merged_data[0:]
 for data in data_set:
+	# Looping threw the dataset
 	# print('Parsing merge data:')
 	# print ('Parameters: {0}'.format(data.launch_parameters))
 	for app_part in data.data_extract:
+		# observing each application part separately
 		
 		# print('     {0} : {1}'.format(app_part, numpy.percentile(data.data_extract[app_part],75)))
 		if parts_array.get(app_part):
-			
+			# trying to add to the existing application part
 			parts_array[app_part].add(data.launch_parameters,numpy.percentile(data.data_extract[app_part],75))
 
 		else: 
+			# creating new application part if not found
 			# print(' Creating App part with {0}, {1}, {2}'.format(app_part, data.launch_parameters,numpy.percentile(data.data_extract[app_part],75)))
 			# part_entity = Application_part()
 			application_part_entity = Application_part(app_part, data.launch_parameters, numpy.percentile(data.data_extract[app_part],75))
@@ -136,12 +137,13 @@ print ('Found parts: {0}'.format(len(parts_array)))
 
 print(parts_array['Alloc'].part_name)
 
+
+# Outputing the data into the files each for application part
 for part in parts_array:
 	output = []
 	print(part)
 	parts_array[part].print_in_file('log2',part)
 	parts_array[part].generate_gnuplot_script(part)
-
 
 
 
